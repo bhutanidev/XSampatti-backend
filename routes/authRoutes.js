@@ -1,6 +1,7 @@
 const express = require("express")
 // const { userModel } = require("../models/userModel")
 const { signupController, signinController } = require("../controllers/authController")
+const cookieParser = require("cookie-parser")
 
 const authRouter = express.Router()
 
