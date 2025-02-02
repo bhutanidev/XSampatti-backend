@@ -5,7 +5,8 @@ const { authRouter } = require('./routes/authRoutes');
 const { transactionRouter } = require('./routes/transactionRoute');
 const { attachUser } = require('./middlewares/authMiddleware');
 const app = express();
-var cors = require('cors')
+var cors = require('cors');
+const { reminderRouter } = require('./routes/reminderRoute');
 require("dotenv").config()
 
 var corsOptions = {
@@ -22,5 +23,6 @@ const PORT = 3000;
 app.listen(PORT,()=>console.log(`Server running on port ${PORT}`))
 app.use('/api',authRouter)
 app.use('/api',attachUser,transactionRouter)
+app.use('/api',attachUser,reminderRouter)
 
 connectmongo()

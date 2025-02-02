@@ -24,7 +24,7 @@ transactionRouter.post("/transaction", async (req, res) => {
     }else{
         cat_id=find._id
     }
-    console.log(cat_id);
+    // console.log(cat_id);
     
     const newTransaction = await transactionModel.create({
         userId:req.id,
@@ -32,12 +32,12 @@ transactionRouter.post("/transaction", async (req, res) => {
         category:cat_id,
         date:datecreated,
         description,
- 
     })
+    const findrem = await transactionModel.findOne({userId:req.id,_id:newTransaction.id}).populate("category")
     if(!newTransaction){
         return res.status(400).json({error:"somethig wrong with database"})
     }else{
-        return res.status(200).json({newTransaction})
+        return res.status(200).json({findrem})
     }
 });
 
@@ -79,7 +79,7 @@ transactionRouter.get("/transaction/date/:date/:page", async (req, res) => {
 });
 
 transactionRouter.patch("/transaction",async(req,res)=>{
-    const {amount,category,date,description,id,transactionId}=req.body
+    const {amount,category,date,description,transactionId}=req.body
     let updateobj = {};
     if(!transactionId){
         return res.json({error:"transaction id is required"})
@@ -94,25 +94,24 @@ transactionRouter.patch("/transaction",async(req,res)=>{
             if(!find){
                 return res.json({error:"no such transaction"})
             }
-            if(find.userId.toString()!==id){
+            if(find.userId.toString()!==req.id){
                 return res.json({error:"Not allowed to change this transaction"})
             }
             const updated = await transactionModel.findByIdAndUpdate(transactionId,{
                 ...updateobj
             },{new:true})
-            console.log(updated)
+            return res.json({success:"updated successfully",updated})
     } catch (error) {
         return res.json({error:error})
     }
     
-    return res.json({success:"updated successfully"})
 
 })
 
 transactionRouter.delete("/transaction/:transactionId",async(req,res)=>{
     const id = req.params.transactionId
     try {
-        const deletedobj = await transactionModel.findByIdAndDelete(id)
+        const deletedobj = await transactionModel.findOneAndDelete({_id:id,userId:req.id})
         if(!deletedobj){
             return res.json({error:"Transactin not found"})
         }
