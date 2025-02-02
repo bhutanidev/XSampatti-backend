@@ -54,7 +54,7 @@ reminderRouter.get('/reminder',async(req,res)=>{
         const all_reminder=await ReminderModel.find({
             userId:id
         }).populate("category").select("_id amount category toBePaid description dayOfMonth")
-        return res.status(200).json({remnders:all_reminder})
+        return res.status(200).json({reminders:all_reminder})
     } catch (error) {
         return res.status(500).json({error:error})
     }

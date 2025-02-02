@@ -1,6 +1,9 @@
 const jwt = require("jsonwebtoken")
 const attachUser = async(req,res,next)=>{
     const token = req.cookies.token
+    // console.log(token);
+    // console.log(req.path);
+    
     
     try {
         if(!token){
