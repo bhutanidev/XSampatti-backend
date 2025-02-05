@@ -22,8 +22,9 @@ const signupController=async(req,res)=>{
         const found = await userModel.findOne({
             username:username,
         })
+        //register
         if(!found){
-            //register
+        
             const hashed = await hashPassword(password);
             const newuser = await userModel.create({
                 username:username,
