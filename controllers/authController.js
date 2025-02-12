@@ -57,10 +57,12 @@ const signinController=async(req,res)=>{
         if(match){
             //return cookie
             const key = process.env.JWT_SECRET
-            const token = await jwt.sign({username:found.username,id:found._id},key,{})
-            res.status(200).cookie("token",token,{
-                httpOnly:true
-            }).json({username:found.username,token:token})
+            const token = await jwt.sign({username:found.username,id:found._id},key,{expiresIn: '1h'})
+            res.cookie("token",token,{
+                httpOnly:true,
+                secure: process.env.NODE_ENV === 'production'?true:false,
+                // sameSite: 'None',
+            }).json({username:found.username,firstname:found.firstname,lastname:found.lastname})
         }else{
             //error pass not match
             res.status(400).json({error:"Password does not match"})

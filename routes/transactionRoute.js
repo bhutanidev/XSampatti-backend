@@ -13,10 +13,10 @@ transactionRouter.get('/transaction',async(req,res)=>{
     try {
         const all_transactions=await transactionModel.find({
             userId:id
-        }).populate("category").select("_id amount category date description")
-        return res.json({transactions:all_transactions})
+        }).limit(10).populate("category").select("_id amount category date description")
+        return res.status(200).json({transactions:all_transactions})
     } catch (error) {
-        return res.json({error:error})
+        return res.status(500).json({error:error})
     }
 })
 

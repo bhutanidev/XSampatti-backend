@@ -1,9 +1,13 @@
 const jwt = require("jsonwebtoken")
 const attachUser = async(req,res,next)=>{
     const token = req.cookies.token
+    // console.log(token);
+    // console.log(req.path);
+    
+    
     try {
         if(!token){
-            res.json({error:"No token found"})
+            res.status(401).json({error:"No token found"})
             return
         }
         const key  = process.env.JWT_SECRET
@@ -15,7 +19,7 @@ const attachUser = async(req,res,next)=>{
             next()
             return
         }else{
-            res.status(403).json({error:"Not logged in or invalid token"})
+            res.status(401).json({error:"invalid token Not logged in or invalid token"})
         }
     } catch (error) {
         console.error(error)
