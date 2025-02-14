@@ -96,7 +96,6 @@ const updTransaction=async(req,res)=>{
 
 const getCatogories=async(req,res)=>{
     const {category}=req.body;
-
 }
 module.exports={
     addTransaction,
