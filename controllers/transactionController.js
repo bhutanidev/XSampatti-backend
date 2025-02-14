@@ -30,10 +30,13 @@ const addTransaction=async (req, res) => {
         description,
  
     })
-    if(!newTransaction){
+    
+    const populated_transaction=await transactionModel.findById(newTransaction._id).populate("category").select("_id amount category date description")
+    //new trnx ki kya kya fields chhaiye
+    if(!newTransaction || !populated_transaction){
         return res.status(400).json({error:"somethig wrong with database"})
     }else{
-        return res.status(200).json({newTransaction})
+        return res.status(200).json({newTransaction:populated_transaction})
     }
 }
 const getTransaction=async(req,res)=>{
