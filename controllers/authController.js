@@ -63,6 +63,7 @@ const signinController=async(req,res)=>{
                 secure: process.env.NODE_ENV === 'production'?true:false,
                 // sameSite: 'None',
             }).json({username:found.username,firstname:found.firstname,lastname:found.lastname})
+            // console.log("token:",found.token)
         }else{
             //error pass not match
             res.status(400).json({error:"Password does not match"})

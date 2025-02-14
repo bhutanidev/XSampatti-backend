@@ -1,24 +1,14 @@
 const express = require("express")
 // const { userModel } = require("../models/userModel")
-const { signupController, signinController } = require("../controllers/authController");
+// const { signupController, signinController } = require("../controllers/authController");
 const { categoryModel } = require("../models/categoryModel");
 const { transactionModel } = require("../models/transactionModel");
-const {addTransaction,delTransaction,updTransaction}=require("../controllers/transactionController")
+const {addTransaction,delTransaction,updTransaction,getTransaction,getCatogories}=require("../controllers/transactionController")
 
 const transactionRouter = express.Router()
 transactionRouter.post("/transaction", addTransaction);
 
-transactionRouter.get('/transaction',async(req,res)=>{
-    const id = req.id
-    try {
-        const all_transactions=await transactionModel.find({
-            userId:id
-        }).limit(10).populate("category").select("_id amount category date description")
-        return res.status(200).json({transactions:all_transactions})
-    } catch (error) {
-        return res.status(500).json({error:error})
-    }
-})
+transactionRouter.get('/transaction',getTransaction)
 
 transactionRouter.get("/transaction/date/:date/:page", async (req, res) => {
     try {
@@ -48,5 +38,7 @@ transactionRouter.get("/transaction/date/:date/:page", async (req, res) => {
 transactionRouter.patch("/transaction",updTransaction)
 
 transactionRouter.delete("/transaction/:transactionId",delTransaction)
+
+transactionRouter.get("/transaction",getCatogories)
   
 module.exports = {transactionRouter};
