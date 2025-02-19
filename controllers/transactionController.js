@@ -1,5 +1,6 @@
 const { categoryModel } = require( "../models/categoryModel")
 const { transactionModel } = require("../models/transactionModel");
+const mongoose = require("mongoose");
 const addTransaction=async (req, res) => {
     let { amount, category, date , description } = req.body;
     //
@@ -45,7 +46,7 @@ const getTransaction=async(req,res)=>{
     try {
         const all_transactions=await transactionModel.find({
             userId:id
-        }).limit(10).populate("category").select("_id amount category date description")
+        }).populate("category").select("_id amount category date description")
         return res.status(200).json({transactions:all_transactions})
     } catch (error) {
         return res.status(500).json({error:error})
@@ -53,7 +54,8 @@ const getTransaction=async(req,res)=>{
 }
 
 const delTransaction=async(req,res)=>{
-    const id = req.params.transactionId
+    const id = req.params.transactionId.trim(); 
+    // console.log(req.params)
     try {
         const deletedobj = await transactionModel.findByIdAndDelete(id)
         if(!deletedobj){
@@ -67,7 +69,8 @@ const delTransaction=async(req,res)=>{
 }
 
 const updTransaction=async(req,res)=>{
-    const {amount,category,date,description,id,transactionId}=req.body
+    const {amount,category,date,description,transactionId}=req.body
+    const id=req.id; // it means that we ahve to do withcredentials true
     let updateobj = {};
     if(!transactionId){
         return res.json({error:"transaction id is required"})
@@ -93,19 +96,116 @@ const updTransaction=async(req,res)=>{
         return res.json({error:error})
     }
     
-    return res.json({success:"updated successfully"})
+    return res.json({success:"Updated successfully"})
 
 }
 
 const getCatogories=async(req,res)=>{
+    
     const {category}=req.body;
+    
 
 }
+
+// Get current month's total sum
+const getCurrentMonthSum = async (req, res) => {
+    const userId = req.id;
+
+    try {
+        const startOfMonth = new Date(new Date().setDate(1)); // First day of the month
+        const today = new Date(); // Current date
+        
+        const pipeline = [
+          {
+            $match: {
+              userId: new mongoose.Types.ObjectId(userId), // Ensure correct ObjectId type
+              date: {
+                $exists: true,
+                $gte: startOfMonth,
+                $lte: today,
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              totalAmount: { $sum: "$amount" },
+            },
+          },
+        ];
+        
+        const result = await transactionModel.aggregate(pipeline);
+        console.log(result);
+        return res.json({
+            success: true,
+            totalAmount: result[0]?.totalAmount || 0
+        });
+
+    } catch (err) {
+        console.error('Error calculating month sum:', err);
+        return res.status(500).json({
+            success: false,
+            error: 'Error calculating month sum'
+        });
+    }
+};
+
+// Get current week's total sum
+const getCurrentWeekSum = async (req, res) => {
+    console.log("hi there")
+    const userId = req.id;
+
+    try {
+        const today = new Date();
+        const startOfWeek = new Date(today);
+        startOfWeek.setHours(0, 0, 0, 0);
+        // Set to Monday of current week
+        startOfWeek.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+
+        const pipeline = [
+            {
+              $match: {
+                userId: new mongoose.Types.ObjectId(userId), // Ensure correct ObjectId type
+                date: {
+                  $exists: true,
+                  $gte: startOfWeek,
+                  $lte: today,
+                },
+              },
+            },
+            {
+              $group: {
+                _id: null,
+                totalAmount: { $sum: "$amount" },
+              },
+            },
+          ];
+          
+          const result = await transactionModel.aggregate(pipeline);
+          console.log(result);
+
+        return res.json({
+            success: true,
+            totalAmount: result[0]?.totalAmount || 0
+        });
+
+    } catch (err) {
+        console.error('Error calculating week sum:', err);
+        return res.status(500).json({
+            success: false,
+            error: 'Error calculating week sum'
+        });
+    }
+};
+
+
 module.exports={
     addTransaction,
     delTransaction,
     updTransaction,
     getTransaction,
-    getCatogories
+    getCatogories,
+    getCurrentWeekSum,
+    getCurrentMonthSum
 
 }
