@@ -43,9 +43,13 @@ const getTransaction=async(req,res)=>{
     const id = req.id 
     //above is user id
     try {
-        const all_transactions=await transactionModel.find({
-            userId:id
-        }).limit(10).populate("category").select("_id amount category date description")
+        const all_transactions = await transactionModel
+        .find({ userId: id })
+        .sort({ date: -1 }) // Sort by date in descending order
+        .limit(10)
+        .populate("category")
+        .select("_id amount category date description");
+      
         return res.status(200).json({transactions:all_transactions})
     } catch (error) {
         return res.status(500).json({error:error})
