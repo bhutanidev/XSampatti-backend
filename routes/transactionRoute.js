@@ -3,7 +3,7 @@ const express = require("express")
 // const { signupController, signinController } = require("../controllers/authController");
 const { categoryModel } = require("../models/categoryModel");
 const { transactionModel } = require("../models/transactionModel");
-const {addTransaction,delTransaction,updTransaction,getTransaction,getCatogories}=require("../controllers/transactionController")
+const {addTransaction,delTransaction,updTransaction,getTransaction,getCatogories,getCurrentWeekSum,getCurrentMonthSum}=require("../controllers/transactionController")
 
 const transactionRouter = express.Router()
 transactionRouter.post("/transaction", addTransaction);
@@ -40,5 +40,8 @@ transactionRouter.patch("/transaction",updTransaction)
 transactionRouter.delete("/transaction/:transactionId",delTransaction)
 
 transactionRouter.get("/transaction",getCatogories)
-  
+
+transactionRouter.get('/transaction/weekSum',getCurrentWeekSum)
+
+transactionRouter.get('/transaction/monthSum',getCurrentMonthSum)
 module.exports = {transactionRouter};
