@@ -255,7 +255,6 @@ const getCurrentMonthSum = async (req, res) => {
 
 // Get current week's total sum
 const getCurrentWeekSum = async (req, res) => {
-    console.log("hi there")
     const userId = req.id;
 
     try {

@@ -3,7 +3,7 @@ const { ReminderModel } = require("../models/reminderModel")
 
 const addReminder=async(req,res)=>{
     let {amount,dayOfMonth,toBePaid,description,category} = req.body
-    if(!amount || !dayOfMonth || !toBePaid || !category){
+    if(!amount || !dayOfMonth || !category){
         return res.status(400).json({error:"Please fill all the required fields"})
     }
     if(!description){
